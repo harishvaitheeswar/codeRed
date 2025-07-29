@@ -15,24 +15,24 @@ Farmers Guide to Safe Farming is a community-centered tech solution designed to 
 
 - A FERTILIZER HEALTH ALALYSIS SYSTEM:
 
-  -Takes the loaction of the user and then sees the risks of the most used fertilizer in that area
+  - Takes the loaction of the user and then sees the risks of the most used fertilizer in that area
  
-  -Automatically searches and gives the nearest PHCs for treatment and advice
+  - Automatically searches and gives the nearest PHCs for treatment and advice
 
-  -Health effects tab offers in-depth information
+  - Health effects tab offers in-depth information
    
 
 - Smart Automated Watering System:
   
-  -Grid based farming simulation
+  - Grid based farming simulation
   
-  -Refill Vehicles decided when to water and when to refill the water without user input(Automated)
+  - Refill Vehicles decided when to water and when to refill the water without user input(Automated)
   
-  -Vehicle has automated pathfinding system
+  - Vehicle has automated pathfinding system
   
-  -Pulsing color-coded feedback based on vehicle water level (low water = white pulsing, full = purple)
+  - Pulsing color-coded feedback based on vehicle water level (low water = white pulsing, full = purple)
   
-  -Real-time 2D animation with matplotlib
+  - Real-time 2D animation with matplotlib
 
 
 - Easy Access to Government Schemes:
