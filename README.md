@@ -68,7 +68,7 @@ This helps improve rural healthcare, crop safety, and farming policies.
  - Swapnil: Documentation
 
 **License**
-This project is licensed under the MIT License.
+ - This project is licensed under the MIT License.
 
 
 
