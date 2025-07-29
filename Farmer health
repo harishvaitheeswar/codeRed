@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>कृषि स्वास्थ्य विश्लेषक - Crop Health Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .language-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .lang-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .lang-btn:hover, .lang-btn.active {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: #2c5282;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        .pesticide-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .pesticide-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .pesticide-card:hover {
+            border-color: #4CAF50;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+        }
+
+        .pesticide-card.selected {
+            border-color: #4CAF50;
+            background: #e8f5e8;
+        }
+
+        .pesticide-name {
+            font-weight: bold;
+            color: #2c5282;
+            margin-bottom: 5px;
+        }
+
+        .pesticide-type {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .analyze-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .analyze-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .results-page {
+            display: none;
+        }
+
+        .risk-item {
+            background: white;
+            border-left: 5px solid #ff4444;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .risk-item.medium {
+            border-left-color: #ff9800;
+        }
+
+        .risk-item.low {
+            border-left-color: #4CAF50;
+        }
+
+        .risk-level {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .high { color: #ff4444; }
+        .medium { color: #ff9800; }
+        .low { color: #4CAF50; }
+
+        .alternatives {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .health-effects {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .audio-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 12px;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .government-schemes {
+            background: #d4edda;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+        }
+
+        .scheme-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .scheme-link:hover {
+            text-decoration: underline;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            right: 15px;
+            top: 10px;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .clickable-link {
+            cursor: pointer;
+            color: #007bff;
+            text-decoration: underline;
+        }
+
+        .alternative-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .pesticide-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .language-selector {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="language-selector">
+                <button class="lang-btn active" onclick="changeLanguage('en')">English</button>
+                <button class="lang-btn" onclick="changeLanguage('hi')">हिंदी</button>
+                <button class="lang-btn" onclick="changeLanguage('ta')">தமிழ்</button>
+                <button class="lang-btn" onclick="changeLanguage('te')">తెలుగు</button>
+                <button class="lang-btn" onclick="changeLanguage('kn')">ಕನ್ನಡ</button>
+                <button class="lang-btn" onclick="changeLanguage('ml')">മലയാളം</button>
+                <button class="lang-btn" onclick="changeLanguage('gu')">ગુજરાતી</button>
+                <button class="lang-btn" onclick="changeLanguage('pa')">ਪੰਜਾਬੀ</button>
+            </div>
+            <h1 id="main-title">Agricultural Health Risk Analyzer</h1>
+<parameter name="subtitle">Crop Spraying and Health Impact Analysis System</p>
+        </div>
+
+        <div class="main-content" id="selection-page">
+            <div class="section">
+                <h2 class="section-title" id="pesticide-title">Select Pesticides You Use</h2>
+                <p id="instruction-text">Based on data from your region, we suggest you might be using the following pesticides. Please select the ones you actually use:</p>
+                
+                <div class="pesticide-grid" id="pesticide-grid">
+                    <!-- Pesticides will be populated by JavaScript -->
+                </div>
+                
+                <button class="analyze-btn" id="analyze-btn" onclick="analyzeRisks()" disabled>
+                    Analyze Health Risks
+                </button>
+            </div>
+        </div>
+
+        <div class="main-content results-page" id="results-page">
+            <button class="back-btn" onclick="goBack()">Go Back</button>
+            
+            <div class="section">
+                <h2 class="section-title" id="results-title">Risk Analysis Results</h2>
+                <div id="risk-results">
+                    <!-- Results will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title" id="alternatives-title">Safe Alternatives and Government Schemes</h2>
+                <div class="alternatives" id="alternatives-content">
+                    <!-- Alternatives will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title" id="healthcare-title">Healthcare Schemes</h2>
+                <div class="government-schemes">
+                    <h3>Government Health Insurance Schemes:</h3>
+                    <ul>
+                        <li><a href="#" class="scheme-link" onclick="openHealthcareModal('pmjay')">Pradhan Mantri Jan Arogya Yojana (PM-JAY)</a></li>
+                        <li><a href="#" class="scheme-link" onclick="openHealthcareModal('esic')">Employee State Insurance Corporation (ESIC)</a></li>
+                        <li><a href="#" class="scheme-link" onclick="openHealthcareModal('state')">State Health Insurance Schemes</a></li>
+                        <li><a href="#" class="scheme-link" onclick="openHealthcareModal('kisan')">Kisan Credit Card Health Benefits</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health Effects Modal -->
+    <div id="healthModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('healthModal')">&times;</span>
+            <h2 id="modal-title">Health Effects Details</h2>
+            <div id="modal-content">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+            <button class="audio-btn" onclick="readAloud()">🔊 Listen</button>
+        </div>
+    </div>
+
+    <!-- Healthcare Schemes Modal -->
+    <div id="healthcareModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('healthcareModal')">&times;</span>
+            <h2 id="healthcare-modal-title">Healthcare Scheme Details</h2>
+            <div id="healthcare-modal-content">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let selectedPesticides = [];
+        let currentLanguage = 'en';
+        let currentAudio = null;
+        let currentModalContent = '';
+
+        // Dummy database for pesticides and user data
+        const pesticideDatabase = {
+            'chlorpyrifos': {
+                name: { 
+                    hi: 'क्लोरपायरिफॉस', 
+                    en: 'Chlorpyrifos', 
+                    ta: 'குளோர்பைரிபாஸ்', 
+                    te: 'క్లోర్పైరిఫాస్', 
+                    kn: 'ಕ್ಲೋರ್ಪೈರಿಫಾಸ್', 
+                    ml: 'ക്ലോർപൈരിഫോസ്', 
+                    gu: 'ક્લોરપાયરિફોસ', 
+                    pa: 'ਕਲੋਰਪਾਇਰਿਫੋਸ' 
+                },
+                type: { 
+                    hi: 'कीटनाशक', 
+                    en: 'Insecticide', 
+                    ta: 'பூச்சிக்கொல்லி', 
+                    te: 'కీటనాశకం', 
+                    kn: 'ಕೀಟನಾಶಕ', 
+                    ml: 'കീടനാശിനി', 
+                    gu: 'કીટનાશક', 
+                    pa: 'ਕੀੜੇਮਾਰ' 
+                },
+                risk: 'high',
+                effects: {
+                    hi: 'तंत्रिका तंत्र की क्षति, श्वसन संबंधी समस्याएं, त्वचा में जलन, मतली और चक्कर आना। लंबे समय तक संपर्क से स्मृति हानि और न्यूरोलॉजिकल समस्याएं हो सकती हैं।',
+                    en: 'Nervous system damage, respiratory problems, skin irritation, nausea and dizziness. Long-term exposure can cause memory loss and neurological problems.'
+                },
+                alternatives: {
+                    hi: 'नीम का तेल, बैसिलस थुरिंजेंसिस (BT), ट्राइकोग्रामा कार्ड्स का उपयोग करें।',
+                    en: 'Use neem oil, Bacillus thuringiensis (BT), Trichogramma cards.'
+                }
+            },
+            'glyphosate': {
+                name: { 
+                    hi: 'ग्लाइफोसेट', 
+                    en: 'Glyphosate', 
+                    ta: 'கிளைபோசேட்', 
+                    te: 'గ్లైఫోసేట్', 
+                    kn: 'ಗ್ಲೈಫೋಸೇಟ್', 
+                    ml: 'ഗ്ലൈഫോസേറ്റ്', 
+                    gu: 'ગ્લાયફોસેટ', 
+                    pa: 'ਗਲਾਇਫੋਸੇਟ' 
+                },
+                type: { 
+                    hi: 'खरपतवारनाशी', 
+                    en: 'Herbicide', 
+                    ta: 'களைக்கொல்லி', 
+                    te: 'కలుపు మందు', 
+                    kn: 'ಕಳೆನಾಶಕ', 
+                    ml: 'കളനാശിനി', 
+                    gu: 'નીંદણનાશક', 
+                    pa: 'ਖਰਪਤਵਾਰਨਾਸ਼ੀ' 
+                },
+                risk: 'medium',
+                effects: {
+                    hi: 'आंखों और त्वचा में जलन, सांस लेने में कठिनाई। कुछ अध्ययनों में कैंसर के जोखिम की संभावना देखी गई है।',
+                    en: 'Eye and skin irritation, difficulty breathing. Some studies suggest possible cancer risk.'
+                },
+                alternatives: {
+                    hi: 'हाथ से निराई, मल्चिंग, कवर क्रॉप्स का उपयोग करें।',
+                    en: 'Use hand weeding, mulching, cover crops.'
+                }
+            },
+            'atrazine': {
+                name: { 
+                    hi: 'एट्राज़ीन', 
+                    en: 'Atrazine', 
+                    ta: 'ஆட்ராசைன்', 
+                    te: 'అట్రాజైన్', 
+                    kn: 'ಅಟ್ರಾಜೈನ್', 
+                    ml: 'അട്രാസൈൻ', 
+                    gu: 'એટ્રાઝીન', 
+                    pa: 'ਐਟਰਾਜ਼ੀਨ' 
+                },
+                type: { 
+                    hi: 'खरपतवारनाशी', 
+                    en: 'Herbicide', 
+                    ta: 'களைக்கொல்லி', 
+                    te: 'కలుపు మందు', 
+                    kn: 'ಕಳೆನಾಶಕ', 
+                    ml: 'കളനാശിനി', 
+                    gu: 'નીંદણનાશક', 
+                    pa: 'ਖਰਪਤਵਾਰਨਾਸ਼ੀ' 
+                },
+                risk: 'medium',
+                effects: {
+                    hi: 'हार्मोनल समस्याएं, प्रजनन संबंधी विकार, जल प्रदूषण का कारण बन सकता है।',
+                    en: 'Hormonal problems, reproductive disorders, can cause water pollution.'
+                },
+                alternatives: {
+                    hi: 'फसल चक्रण, प्राकृतिक खरपतवार नियंत्रण विधियों का उपयोग करें।',
+                    en: 'Use crop rotation, natural weed control methods.'
+                }
+            },
+            'endosulfan': {
+                name: { 
+                    hi: 'एंडोसल्फान', 
+                    en: 'Endosulfan', 
+                    ta: 'எண்டோசல்பான்', 
+                    te: 'ఎండోసల్ఫాన్', 
+                    kn: 'ಎಂಡೋಸಲ್ಫಾನ್', 
+                    ml: 'എൻഡോസൾഫാൻ', 
+                    gu: 'એન્ડોસલ્ફાન', 
+                    pa: 'ਐਂਡੋਸਲਫਾਨ' 
+                },
+                type: { 
+                    hi: 'कीटनाशक', 
+                    en: 'Insecticide', 
+                    ta: 'பூச்சிக்கொல்லி', 
+                    te: 'కీటనాశకం', 
+                    kn: 'ಕೀಟನಾಶಕ', 
+                    ml: 'കീടനാശിനി', 
+                    gu: 'કીટનાશક', 
+                    pa: 'ਕੀੜੇਮਾਰ' 
+                },
+                risk: 'high',
+                effects: {
+                    hi: 'अत्यधिक विषाक्तता, तंत्रिका तंत्र की क्षति, प्रजनन संबंधी समस्याएं, कैंसर का खतरा। भारत में प्रतिबंधित।',
+                    en: 'Extremely toxic, nervous system damage, reproductive problems, cancer risk. Banned in India.'
+                },
+                alternatives: {
+                    hi: 'तुरंत उपयोग बंद करें। नीम आधारित कीटनाशक, जैविक नियंत्रण का उपयोग करें।',
+                    en: 'Stop using immediately. Use neem-based pesticides, biological control.'
+                }
+            },
+            'imidacloprid': {
+                name: { 
+                    hi: 'इमिडाक्लोप्रिड', 
+                    en: 'Imidacloprid', 
+                    ta: 'இமிடாக்ளோப்ரிட்', 
+                    te: 'ఇమిడాక్లోప్రిడ్', 
+                    kn: 'ಇಮಿಡಾಕ್ಲೋಪ್ರಿಡ್', 
+                    ml: 'ഇമിഡാക്ലോപ്രിഡ്', 
+                    gu: 'ઇમિડાક્લોપ્રિડ', 
+                    pa: 'ਇਮਿਡਾਕਲੋਪ੍ਰਿਡ' 
+                },
+                type: { 
+                    hi: 'कीटनाशक', 
+                    en: 'Insecticide', 
+                    ta: 'பூச்சிக்கொல்லி', 
+                    te: 'కీటనాశకం', 
+                    kn: 'ಕೀಟನಾಶಕ', 
+                    ml: 'കീടനാശിനി', 
+                    gu: 'કીટનાશક', 
+                    pa: 'ਕੀੜੇਮਾਰ' 
+                },
+                risk: 'low',
+                effects: {
+                    hi: 'हल्की त्वचा जलन, मधुमक्खियों के लिए हानिकारक। सामान्यतः मनुष्यों के लिए कम विषाक्त।',
+                    en: 'Mild skin irritation, harmful to bees. Generally less toxic to humans.'
+                },
+                alternatives: {
+                    hi: 'मधुमक्खी-अनुकूल विकल्प जैसे नीम तेल का उपयोग करें।',
+                    en: 'Use bee-friendly alternatives like neem oil.'
+                }
+            },
+            'neem_oil': {
+                name: { 
+                    hi: 'नीम का तेल', 
+                    en: 'Neem Oil', 
+                    ta: 'வேப்ப எண்ணெய்', 
+                    te: 'వేప నూనె', 
+                    kn: 'ಬೇವಿನ ಎಣ್ಣೆ', 
+                    ml: 'വേപ്പെണ്ണ', 
+                    gu: 'લીમડાનું તેલ', 
+                    pa: 'ਨਿੰਮ ਦਾ ਤੇਲ' 
+                },
+                type: { 
+                    hi: 'जैविक कीटनाशक', 
+                    en: 'Organic Pesticide', 
+                    ta: 'இயற்கை பூச்சிக்கொல்லி', 
+                    te: 'సేంద్రీయ కీటనాశకం', 
+                    kn: 'ಸಾವಯವ ಕೀಟನಾಶಕ', 
+                    ml: 'ജൈവിക കീടനാശിനി', 
+                    gu: 'કુદરતી કીટનાશક', 
+                    pa: 'ਜੈਵਿਕ ਕੀੜੇਮਾਰ' 
+                },
+                risk: 'low',
+                effects: {
+                    hi: 'पूर्णतः सुरक्षित, प्राकृतिक, पर्यावरण अनुकूल। कोई हानिकारक प्रभाव नहीं।',
+                    en: 'Completely safe, natural, environmentally friendly. No harmful effects.'
+                },
+                alternatives: {
+                    hi: 'यह पहले से ही एक सुरक्षित विकल्प है। इसका उपयोग जारी रखें।',
+                    en: 'This is already a safe alternative. Continue using it.'
+                }
+            }
+        };
+
+        // User data simulation (from CSV)
+        const userData = {
+            location: 'Vengavasal, Tamil Nadu',
+            cropType: 'rice',
+            season: 'kharif',
+            suggestedPesticides: ['chlorpyrifos', 'glyphosate', 'atrazine', 'imidacloprid', 'neem_oil']
+        };
+
+        // Language translations
+        const translations = {
+            hi: {
+                title: 'कृषि स्वास्थ्य जोखिम विश्लेषक',
+                subtitle: 'फसल छिड़काव और स्वास्थ्य प्रभाव विश्लेषण प्रणाली',
+                pesticideTitle: 'आपके द्वारा उपयोग किए जाने वाले कीटनाशक चुनें',
+                instruction: 'अपने क्षेत्र के डेटा के आधार पर, हमारा सुझाव है कि आप निम्नलिखित कीटनाशकों का उपयोग कर रहे हैं। कृपया उन्हें चुनें जिनका आप वास्तव में उपयोग करते हैं:',
+                analyzeBtn: 'स्वास्थ्य जोखिम का विश्लेषण करें',
+                resultsTitle: 'जोखिम विश्लेषण परिणाम',
+                alternativesTitle: 'सुरक्षित विकल्प और सरकारी योजनाएं',
+                healthcareTitle: 'स्वास्थ्य सेवा योजनाएं',
+                backBtn: 'वापस जाएं',
+                riskLevels: {
+                    high: 'उच्च जोखिम',
+                    medium: 'मध्यम जोखिम',
+                    low: 'कम जोखिम'
+                }
+            },
+            en: {
+                title: 'Agricultural Health Risk Analyzer',
+                subtitle: 'Crop Spraying and Health Impact Analysis System',
+                pesticideTitle: 'Select Pesticides You Use',
+                instruction: 'Based on data from your region, we suggest you might be using the following pesticides. Please select the ones you actually use:',
+                analyzeBtn: 'Analyze Health Risks',
+                resultsTitle: 'Risk Analysis Results',
+                alternativesTitle: 'Safe Alternatives and Government Schemes',
+                healthcareTitle: 'Healthcare Schemes',
+                backBtn: 'Go Back',
+                riskLevels: {
+                    high: 'High Risk',
+                    medium: 'Medium Risk',
+                    low: 'Low Risk'
+                }
+            }
+        };
+
+        // Healthcare schemes data
+        const healthcareSchemes = {
+            pmjay: {
+                title: 'Pradhan Mantri Jan Arogya Yojana (PM-JAY)',
+                description: 'Free health insurance up to ₹5 lakh per family per year. Covers over 1,400 medical packages including hospitalization costs.',
+                howToApply: 'Visit your nearest Common Service Centre (CSC) or PMJAY hospital with Aadhaar card and ration card.',
+                website: 'https://pmjay.gov.in'
+            },
+            esic: {
+                title: 'Employee State Insurance Corporation (ESIC)',
+                description: 'Medical care and cash benefits during sickness and employment injury. Covers workers earning up to ₹25,000 per month.',
+                howToApply: 'Apply through your employer or visit nearest ESIC office with employment proof.',
+                website: 'https://esic.in'
+            },
+            state: {
+                title: 'State Health Insurance Schemes',
+                description: 'Tamil Nadu: Chief Minister\'s Comprehensive Health Insurance Scheme provides free treatment up to ₹5 lakh.',
+                howToApply: 'Visit nearest government hospital or PHC with identity proof and income certificate.',
+                website: 'Contact your local PHC for details'
+            },
+            kisan: {
+                title: 'Kisan Credit Card Health Benefits',
+                description: 'Accidental insurance cover of ₹50,000 to ₹2 lakh for farmers with active KCC accounts.',
+                howToApply: 'Contact your bank where you have KCC account to activate insurance benefits.',
+                website: 'Visit your nearest bank branch'
+            }
+        };
+
+        // Initialize the application
+        function init() {
+            populatePesticides();
+            changeLanguage('en');
+        }
+
+        // Populate pesticides based on user data
+        function populatePesticides() {
+            const grid = document.getElementById('pesticide-grid');
+            grid.innerHTML = '';
+            
+            userData.suggestedPesticides.forEach(pesticideId => {
+                const pesticide = pesticideDatabase[pesticideId];
+                if (pesticide) {
+                    const card = document.createElement('div');
+                    card.className = 'pesticide-card';
+                    card.dataset.pesticide = pesticideId;
+                    card.onclick = () => togglePesticide(pesticideId);
+                    
+                    card.innerHTML = `
+                        <div class="pesticide-name">${pesticide.name[currentLanguage] || pesticide.name.en}</div>
+                        <div class="pesticide-type">${pesticide.type[currentLanguage] || pesticide.type.en}</div>
+                    `;
+                    
+                    grid.appendChild(card);
+                }
+            });
+        }
+
+        // Toggle pesticide selection
+        function togglePesticide(pesticideId) {
+            const card = document.querySelector(`[data-pesticide="${pesticideId}"]`);
+            const index = selectedPesticides.indexOf(pesticideId);
+            
+            if (index > -1) {
+                selectedPesticides.splice(index, 1);
+                card.classList.remove('selected');
+            } else {
+                selectedPesticides.push(pesticideId);
+                card.classList.add('selected');
+            }
+            
+            document.getElementById('analyze-btn').disabled = selectedPesticides.length === 0;
+        }
+
+        // Change language
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update active language button
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update text content
+            const t = translations[lang] || translations.en;
+            document.getElementById('main-title').textContent = t.title;
+            document.getElementById('subtitle').textContent = t.subtitle;
+            document.getElementById('pesticide-title').textContent = t.pesticideTitle;
+            document.getElementById('instruction-text').textContent = t.instruction;
+            document.getElementById('analyze-btn').textContent = t.analyzeBtn;
+            document.getElementById('results-title').textContent = t.resultsTitle;
+            document.getElementById('alternatives-title').textContent = t.alternativesTitle;
+            document.getElementById('healthcare-title').textContent = t.healthcareTitle;
+            document.querySelector('.back-btn').textContent = t.backBtn;
+            
+            // Repopulate pesticides with new language
+            populatePesticides();
+        }
+
+        // Analyze risks
+        function analyzeRisks() {
+            if (selectedPesticides.length === 0) return;
+            
+            // Sort by risk level
+            const riskOrder = { high: 3, medium: 2, low: 1 };
+            const sortedPesticides = selectedPesticides.sort((a, b) => {
+                return riskOrder[pesticideDatabase[b].risk] - riskOrder[pesticideDatabase[a].risk];
+            });
+            
+            // Show results page
+            document.getElementById('selection-page').style.display = 'none';
+            document.getElementById('results-page').style.display = 'block';
+            
+            // Populate results
+            const resultsDiv = document.getElementById('risk-results');
+            resultsDiv.innerHTML = '';
+            
+            sortedPesticides.forEach(pesticideId => {
+                const pesticide = pesticideDatabase[pesticideId];
+                const riskItem = document.createElement('div');
+                riskItem.className = `risk-item ${pesticide.risk}`;
+                
+                const riskLabels = {
+                    high: 'High Risk',
+                    medium: 'Medium Risk',
+                    low: 'Low Risk'
+                };
+                
+                riskItem.innerHTML = `
+                    <div class="risk-level ${pesticide.risk}">
+                        ${riskLabels[pesticide.risk]} - ${pesticide.name[currentLanguage] || pesticide.name.en}
+                    </div>
+                    <div class="health-effects">
+                        <strong>Health Effects:</strong> 
+                        <span class="clickable-link" onclick="showHealthEffects('${pesticideId}')">
+                            View Details
+                        </span>
+                        <button class="audio-btn" onclick="speakText('${escapeQuotes(pesticide.effects[currentLanguage] || pesticide.effects.en)}')">🔊</button>
+                    </div>
+                `;
+                
+                resultsDiv.appendChild(riskItem);
+            });
+            
+            // Show alternatives
+            showAlternatives();
+            
+            // Store data (simulate database storage)
+            storeUserData();
+        }
+
+        // Show health effects in modal
+        function showHealthEffects(pesticideId) {
+            const pesticide = pesticideDatabase[pesticideId];
+            const modal = document.getElementById('healthModal');
+            const content = document.getElementById('modal-content');
+            
+            currentModalContent = pesticide.effects[currentLanguage] || pesticide.effects.en;
+            
+            content.innerHTML = `
+                <h3>${pesticide.name[currentLanguage] || pesticide.name.en}</h3>
+                <p><strong>Type:</strong> ${pesticide.type[currentLanguage] || pesticide.type.en}</p>
+                <p><strong>Risk Level:</strong> ${pesticide.risk.charAt(0).toUpperCase() + pesticide.risk.slice(1)}</p>
+                <div style="margin-top: 15px;">
+                    <strong>Health Effects:</strong>
+                    <p style="margin-top: 10px; line-height: 1.6;">${currentModalContent}</p>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        // Show alternatives
+        function showAlternatives() {
+            const alternativesDiv = document.getElementById('alternatives-content');
+            alternativesDiv.innerHTML = '<h3>Safer Alternatives and Government Support:</h3>';
+            
+            selectedPesticides.forEach(pesticideId => {
+                const pesticide = pesticideDatabase[pesticideId];
+                if (pesticide.risk !== 'low') {
+                    const altItem = document.createElement('div');
+                    altItem.className = 'alternative-item';
+                    altItem.innerHTML = `
+                        <strong>Alternative for ${pesticide.name[currentLanguage] || pesticide.name.en}:</strong>
+                        <p>${pesticide.alternatives[currentLanguage] || pesticide.alternatives.en}</p>
+                    `;
+                    alternativesDiv.appendChild(altItem);
+                }
+            });
+
+            // Add government schemes info
+            const schemesInfo = document.createElement('div');
+            schemesInfo.innerHTML = `
+                <h4 style="margin-top: 20px; color: #2c5282;">Government Agricultural Support:</h4>
+                <ul style="margin-top: 10px;">
+                    <li><strong>Paramparagat Krishi Vikas Yojana (PKVY):</strong> ₹50,000 per hectare for organic farming over 3 years</li>
+                    <li><strong>National Mission for Sustainable Agriculture:</strong> Subsidies for bio-fertilizers and organic inputs</li>
+                    <li><strong>Soil Health Card Scheme:</strong> Free soil testing and recommendations for safer alternatives</li>
+                    <li><strong>Rashtriya Krishi Vikas Yojana:</strong> Financial assistance for adopting sustainable practices</li>
+                </ul>
+            `;
+            alternativesDiv.appendChild(schemesInfo);
+        }
+
+        // Open healthcare modal
+        function openHealthcareModal(schemeType) {
+            const scheme = healthcareSchemes[schemeType];
+            const modal = document.getElementById('healthcareModal');
+            const content = document.getElementById('healthcare-modal-content');
+            
+            content.innerHTML = `
+                <h3>${scheme.title}</h3>
+                <p><strong>Description:</strong> ${scheme.description}</p>
+                <p><strong>How to Apply:</strong> ${scheme.howToApply}</p>
+                <p><strong>More Information:</strong> <a href="${scheme.website}" target="_blank" class="scheme-link">${scheme.website}</a></p>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            if (currentAudio) {
+                currentAudio.cancel();
+                currentAudio = null;
+            }
+        }
+
+        // Go back to selection page
+        function goBack() {
+            document.getElementById('results-page').style.display = 'none';
+            document.getElementById('selection-page').style.display = 'block';
+        }
+
+        // Text-to-speech function
+        function speakText(text) {
+            if (currentAudio) {
+                currentAudio.cancel();
+            }
+            
+            if ('speechSynthesis' in window) {
+                currentAudio = new SpeechSynthesisUtterance(text);
+                currentAudio.lang = currentLanguage === 'hi' ? 'hi-IN' : 'en-US';
+                currentAudio.rate = 0.8;
+                speechSynthesis.speak(currentAudio);
+            } else {
+                alert('Speech synthesis not supported in your browser');
+            }
+        }
+
+        // Read aloud current modal content
+        function readAloud() {
+            if (currentModalContent) {
+                speakText(currentModalContent);
+            }
+        }
+
+        // Utility function to escape quotes for HTML attributes
+        function escapeQuotes(str) {
+            return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+        }
+
+        // Store user data (simulate database storage)
+        function storeUserData() {
+            const newData = {
+                timestamp: new Date().toISOString(),
+                location: userData.location,
+                selectedPesticides: selectedPesticides,
+                language: currentLanguage,
+                riskAssessment: selectedPesticides.map(id => ({
+                    pesticide: id,
+                    risk: pesticideDatabase[id].risk
+                }))
+            };
+            
+            // In a real application, this would be sent to a backend API
+            console.log('Storing user data:', newData);
+            
+            // Simulate storing in localStorage for demo purposes
+            try {
+                const existingData = JSON.parse(localStorage.getItem('cropHealthData') || '[]');
+                existingData.push(newData);
+                localStorage.setItem('cropHealthData', JSON.stringify(existingData));
+            } catch (e) {
+                console.log('LocalStorage not available, data logged to console instead');
+            }
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const healthModal = document.getElementById('healthModal');
+            const healthcareModal = document.getElementById('healthcareModal');
+            
+            if (event.target === healthModal) {
+                closeModal('healthModal');
+            }
+            if (event.target === healthcareModal) {
+                closeModal('healthcareModal');
+            }
+        }
+
+        // Initialize when page loads
+        window.onload = init;
+    </script>
+</body>
+</html>
