@@ -26,8 +26,9 @@
   #controls {
     margin-top: 15px;
   }
-  button {
+  select, button {
     padding: 10px 15px;
+    margin: 5px;
     background: #4CAF50;
     color: white;
     border: none;
@@ -41,77 +42,133 @@
   #weather {
     margin-top: 20px;
   }
-  #popupTable {
-    display: none;
+  #dashboard {
+    margin-top: 20px;
+    padding: 15px;
     background: #222;
-    padding: 20px;
-    border: 2px solid white;
-    border-radius: 8px;
-    width: 60%;
-    margin: 20px auto;
-    color: white;
+    border-top: 2px solid white;
   }
-  table {
+  #tank {
+    width: 100px;
+    height: 150px;
+    border: 3px solid white;
+    margin: 0 auto;
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .water {
+    position: absolute;
+    bottom: 0;
     width: 100%;
-    border-collapse: collapse;
+    background: linear-gradient(to top, #1e90ff, #00bfff);
+    transition: height 0.5s;
   }
-  table, td, th {
-    border: 1px solid white;
+  .bubble {
+    position: absolute;
+    bottom: 0;
+    width: 10px;
+    height: 10px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 50%;
+    animation: rise 2s infinite;
   }
-  th, td {
-    padding: 8px;
-    text-align: center;
+  @keyframes rise {
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-150px) scale(0.5); opacity: 0; }
+  }
+  #moistureBarContainer {
+    width: 60%;
+    height: 20px;
+    border: 2px solid white;
+    border-radius: 10px;
+    margin: 15px auto;
+    overflow: hidden;
+  }
+  #moistureBar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(to right, yellow, green, cyan, blue);
+    transition: width 1s;
+  }
+  #indicator {
+    margin-top: 5px;
+    font-size: 18px;
+    font-weight: bold;
   }
 </style>
 </head>
 <body>
+
 <h1>🌱 Smart Irrigation Simulator</h1>
+
 <canvas id="farmCanvas" width="500" height="500"></canvas>
+
 <div id="controls">
-  <button onclick="startIrrigation()">💧 Start Irrigation</button>
+  <select id="methodSelect">
+    <option value="manual">Manual Irrigation 💧</option>
+    <option value="sprinkler">Sprinkler 🌧️</option>
+    <option value="drip">Drip Irrigation 💦</option>
+  </select>
+  <button onclick="startIrrigation()">Start Irrigation</button>
 </div>
+
 <div id="weather">
   <h2>Weather Forecast</h2>
   <p id="forecast"></p>
 </div>
-<div id="popupTable"></div>
+
+<!-- Dashboard Below -->
+<div id="dashboard">
+  <h3>💧 Water Tank</h3>
+  <div id="tank">
+    <div class="water" id="waterLevel"></div>
+  </div>
+  <button onclick="refillTank()">Refill Tank</button>
+  <p id="waterUsageText"></p>
+
+  <h3>🌿 Crop Moisture Level</h3>
+  <div id="moistureBarContainer">
+    <div id="moistureBar"></div>
+  </div>
+  <div id="indicator"></div>
+</div>
 
 <script>
-// ======= Canvas & Grid Setup =======
 const canvas = document.getElementById("farmCanvas");
 const ctx = canvas.getContext("2d");
 const gridSize = 10;
 const cellSize = canvas.width / gridSize;
-
 let moisture = [];
-let needsIrrigation = [];
 let forecast = [];
 let isIrrigating = false;
-let rainDrops = [];
 
-// Base64 raindrop image for offline mode
-const imgDrop = new Image();
-imgDrop.src = "data:image/svg+xml;base64," + btoa(`
-<svg xmlns="http://www.w3.org/2000/svg" width="6" height="10">
-<ellipse cx="3" cy="5" rx="2" ry="4" fill="skyblue"/>
-</svg>
-`);
+// Water tank variables
+let tankCapacity = 100;
+let currentTankLevel = 100;
+let bubbleInterval;
 
-// ======= Initialization =======
+// Gradual colors
+function moistureColor(value) {
+  if (value <= 20) return "#ffff66";
+  if (value <= 40) return "#99ff66";
+  if (value <= 60) return "#66ffcc";
+  if (value <= 80) return "#66ccff";
+  return "#0066ff";
+}
+
 function init() {
   for (let i = 0; i < gridSize; i++) {
     moisture[i] = [];
-    needsIrrigation[i] = [];
     for (let j = 0; j < gridSize; j++) {
-      moisture[i][j] = 20; // start low so it's yellow
-      needsIrrigation[i][j] = true;
+      moisture[i][j] = 30;
     }
   }
   generateWeatherForecast();
   draw();
+  updateDashboard();
 }
 
-// ======= Weather =======
 function generateWeatherForecast() {
   forecast = [];
   for (let day = 0; day < 3; day++) {
@@ -135,109 +192,136 @@ function displayForecast() {
   document.getElementById("forecast").innerHTML = text;
 }
 
-// ======= Drawing =======
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let i = 0; i < gridSize; i++) {
     for (let j = 0; j < gridSize; j++) {
-      let color;
-      if (moisture[i][j] > 60) color = "blue";
-      else if (moisture[i][j] > 40) color = "green";
-      else color = "yellow";
-      ctx.fillStyle = color;
+      ctx.fillStyle = moistureColor(moisture[i][j]);
       ctx.fillRect(j * cellSize, i * cellSize, cellSize - 1, cellSize - 1);
     }
   }
 }
 
-// ======= Irrigation Needs =======
-function checkIrrigationNeeds() {
-  for (let i = 0; i < gridSize; i++) {
-    for (let j = 0; j < gridSize; j++) {
-      needsIrrigation[i][j] = (moisture[i][j] < 40 && forecast[0].rainChance < 0.5);
-    }
-  }
-}
-
-// ======= Falling Rain Animation =======
 function startIrrigation() {
   if (isIrrigating) return;
-  isIrrigating = true;
-
-  // Create raindrops starting above the canvas
-  rainDrops = [];
-  for (let i = 0; i < 100; i++) {
-    rainDrops.push({
-      x: Math.random() * canvas.width,
-      y: -Math.random() * canvas.height,
-      speed: 3 + Math.random() * 2,
-      alpha: 1
-    });
+  const method = document.getElementById("methodSelect").value;
+  let waterUse;
+  let moistureIncrease;
+  if (method === "manual") {
+    waterUse = 30;
+    moistureIncrease = 40;
+  } else if (method === "sprinkler") {
+    waterUse = 20;
+    moistureIncrease = 30;
+  } else {
+    waterUse = 10;
+    moistureIncrease = 20;
   }
+  if (currentTankLevel < waterUse) {
+    alert("Not enough water! Please refill.");
+    return;
+  }
+  currentTankLevel -= waterUse;
+  isIrrigating = true;
+  irrigationAnimation(method, moistureIncrease);
+}
 
-  let frameCount = 0;
-  function rainAnimation() {
+function irrigationAnimation(method, moistureIncrease) {
+  let frame = 0;
+  function animate() {
     draw();
-
-    // Draw and move raindrops
-    rainDrops.forEach(drop => {
-      ctx.globalAlpha = drop.alpha;
-      ctx.drawImage(imgDrop, drop.x, drop.y, 6, 10);
-      drop.y += drop.speed; // falling
-      if (drop.y > canvas.height) {
-        drop.y = canvas.height;
-        drop.alpha -= 0.05; // fade out after hitting ground
+    ctx.globalAlpha = 0.7;
+    if (method === "manual") {
+      ctx.fillStyle = "rgba(0,191,255,0.3)";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+    } else if (method === "sprinkler") {
+      for (let i=0; i<50; i++) {
+        ctx.fillStyle = "rgba(173,216,230,0.5)";
+        ctx.beginPath();
+        ctx.arc(Math.random()*canvas.width, Math.random()*canvas.height, 2, 0, Math.PI*2);
+        ctx.fill();
       }
-    });
+    } else if (method === "drip") {
+      for (let i=0; i<gridSize; i++) {
+        ctx.beginPath();
+        ctx.arc(i*cellSize + cellSize/2, canvas.height/2, 3, 0, Math.PI*2);
+        ctx.fillStyle = "skyblue";
+        ctx.fill();
+      }
+    }
     ctx.globalAlpha = 1;
 
-    frameCount++;
-    if (frameCount < 80) {
-      requestAnimationFrame(rainAnimation);
+    frame++;
+    if (frame < 60) {
+      requestAnimationFrame(animate);
     } else {
-      // Apply moisture after rain finishes
-      for (let i = 0; i < gridSize; i++) {
-        for (let j = 0; j < gridSize; j++) {
-          moisture[i][j] += 40;
+      for (let i=0; i<gridSize; i++) {
+        for (let j=0; j<gridSize; j++) {
+          moisture[i][j] += moistureIncrease;
           if (moisture[i][j] > 100) moisture[i][j] = 100;
         }
       }
-      checkIrrigationNeeds();
       draw();
+      updateDashboard();
       isIrrigating = false;
-      showNextIrrigationTable();
     }
   }
-  rainAnimation();
+  animate();
 }
 
-// ======= Popup Table =======
-function showNextIrrigationTable() {
-  const popup = document.getElementById("popupTable");
-  let nextIrrigationDays = "2-3 days (based on forecast)";
-  if (forecast[0].rainChance > 0.7) {
-    nextIrrigationDays = "Likely after 4-5 days (rain expected)";
+function updateDashboard() {
+  document.getElementById("waterLevel").style.height = currentTankLevel + "%";
+
+  let total = 0;
+  for (let i=0; i<gridSize; i++) {
+    for (let j=0; j<gridSize; j++) {
+      total += moisture[i][j];
+    }
   }
-  let html = `<h3>📅 Irrigation Report</h3>
-              <p>Next irrigation likely needed in: <b>${nextIrrigationDays}</b></p>
-              <table>
-                <tr><th>Day</th><th>Condition</th><th>Temp (°C)</th><th>Humidity (%)</th><th>Rain Chance</th></tr>`;
-  forecast.forEach((f, idx) => {
-    html += `<tr>
-              <td>${idx + 1}</td>
-              <td>${f.condition}</td>
-              <td>${f.temp}</td>
-              <td>${f.humidity}</td>
-              <td>${(f.rainChance * 100).toFixed(0)}%</td>
-            </tr>`;
-  });
-  html += "</table>";
-  popup.innerHTML = html;
-  popup.style.display = "block";
+  let avgMoisture = total / (gridSize*gridSize);
+  document.getElementById("moistureBar").style.width = avgMoisture + "%";
+
+  if (avgMoisture < 40) {
+    document.getElementById("indicator").innerHTML = "🚱 Needs Watering";
+    document.getElementById("indicator").style.color = "orange";
+  } else if (avgMoisture > 90) {
+    document.getElementById("indicator").innerHTML = "⚠️ Overwatered!";
+    document.getElementById("indicator").style.color = "red";
+  } else {
+    document.getElementById("indicator").innerHTML = "✅ Optimal";
+    document.getElementById("indicator").style.color = "lightgreen";
+  }
 }
 
-// ======= Start =======
+// Refill tank with bubbles
+function refillTank() {
+  if (currentTankLevel >= 100) return;
+
+  // Create bubbles
+  const tank = document.getElementById("tank");
+  bubbleInterval = setInterval(() => {
+    const bubble = document.createElement("div");
+    bubble.classList.add("bubble");
+    bubble.style.left = Math.random() * 80 + "px";
+    bubble.style.animationDuration = (Math.random() * 1 + 1) + "s";
+    tank.appendChild(bubble);
+    setTimeout(() => bubble.remove(), 2000);
+  }, 200);
+
+  let refillInterval = setInterval(() => {
+    if (currentTankLevel >= 100) {
+      clearInterval(refillInterval);
+      clearInterval(bubbleInterval);
+      return;
+    }
+    currentTankLevel += 2;
+    if (currentTankLevel > 100) currentTankLevel = 100;
+    updateDashboard();
+  }, 100);
+}
+
 init();
 </script>
+
 </body>
 </html>
