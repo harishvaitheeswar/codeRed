@@ -4,7 +4,7 @@ A one stop for all the queries and problems related to farming and related thing
 
 **PROJECT OVERVIEW**
 
--There are multiple features to this project which are ass follows:
+-There are multiple features to this project which are as follows:
   - Smart Automated Watering System 
   - Health Risk Deduction system based on Fertilizers used 
   - Allows Farmers to access variious government schemes 
