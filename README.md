@@ -7,7 +7,7 @@ Farmers Guide to Safe Farming is a community-centered tech solution designed to 
 - There are multiple features to this project which are as follows:
   - Smart Automated Watering System 
   - Health Risk assessment system based on Fertilizers used 
-  - Allows Farmers to access various government schemes 
+  - Allows Farmers to access various government schemes
 
  
 **BACKEND FEATURES**
@@ -52,3 +52,23 @@ Farmers Guide to Safe Farming is a community-centered tech solution designed to 
 
     -Government policy-makers
 This helps improve rural healthcare, crop safety, and farming policies.
+
+
+
+**FEATURES***
+ -Frontend: HTML,JS
+ -Hosting: Github.
+
+
+
+**TEAM INFO**
+ - Harish: Team Lead, Backend developer
+ - Madhava: Frontend developer
+ - Anwitha: Frontend developer
+ - Swapnil: Documentation
+
+**License**
+This project is licensed under the MIT License.
+
+
+
