@@ -13,14 +13,16 @@ A one stop for all the queries and problems related to farming and related thing
 **BACKEND FEATURES**
 
 
-- CHECKS THE LOCATION AND TIME PERIOD OF THE USER TO TAG TO VARIOUS RISKS AND THEIR PREVENTION:
+- A FERTILIZER HEALTH ALALYSIS SYSTEM:
 
-  -Takes the loaction of the user and then sees the risks
+  -Takes the loaction of the user and then sees the risks of the most used fertilizer in that area
  
-  -Automatically searches and gives the nearest PHCS
+  -Automatically searches and gives the nearest PHCs for treatment and advice
+
+  -Health effects tab offers in-depth information
    
 
-- AN AUTOMATED WATERING VEHICLE THAT WATERS ACCORDING TO MOISTURE LEVEL:
+- Smart Automated Watering System:
   
   -Grid based farming simulation
   
@@ -31,10 +33,13 @@ A one stop for all the queries and problems related to farming and related thing
   -Pulsing color-coded feedback based on vehicle water level (low water = white pulsing, full = purple)
   
   -Real-time 2D animation with matplotlib
+
+
+- Easy Access to Government Schemes:
   
-  -Animated vehicle and tank with glow and pulsing effects for emphasis
-
-
+  - Gives a list of Government schemes that the user is Eligible for
+ 
+  - Gives a personalised Preference of recommendations based on location
 
 
 
