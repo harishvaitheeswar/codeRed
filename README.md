@@ -1,4 +1,4 @@
-# CAUTOMATED CROP MONITORING SYSTEM 🌾
+# AUTOMATED CROP MONITORING SYSTEM 🌾
 
 A automated watering system 💧 to irrigate plants 🌱 by tracking the water level in the soil and then watering the plants accordingly.
 
