@@ -1,6 +1,6 @@
 # FARMERS GUIDE TO SAFE FARMING  🌾
 
-A one stop for all the queries and problems related to farming and related things.
+Farmers Guide to Safe Farming is a community-centered tech solution designed to simplify farming challenges and enhance agricultural well-being. It offers automated watering, fertilizer safety analysis, and curated access to government schemes — all through a user-friendly interface built for farmers.
 
 **PROJECT OVERVIEW**
 
@@ -45,12 +45,15 @@ A one stop for all the queries and problems related to farming and related thing
 
 **UI**
 
-- Automated system that detects the moisture level in the soil
-- Shows water level of the tank  
-- Easy Inerface to check up on crop water level status
-- Easy access to Help Schemes and other Government schemes that are helpfull for farmers.
-- Helpfull interface that allows farmers to select the fertilizer according to the location inputed by the farmer
-- Shows the high risk Fertilizer compared to the Low risk ones and inform them of their side effects to their health
-- It gives alternatives to the harmfull Fertilizers that the farmer might be using and also gives them info. about the nearby health centers to treat said side effects.
-- Health effect tab is present which when clicked will give them indepth explanation and harmful effects of the fertilizers they are using for better understanding. There is also a read aloud option for those who dont know how to read
-- With the farmers consent, the data from their field are also used for research by various Research Organisation, NGOs and various Governament projects. 
+- Moisture Detection: Automatically senses soil moisture and gives the data to the user
+- Tank Water Level: Clearly displays remaining water.
+- Easy-to-use crop status tracker
+- Helpful tabs for health insights and government schemes
+- Read-aloud accessibility for non-readers
+- With the farmer's consent, anonymized data can be used by:
+    -Research organizations
+
+    -NGOs
+
+    -Government policy-makers
+This helps improve rural healthcare, crop safety, and farming policies.
