@@ -56,8 +56,8 @@ This helps improve rural healthcare, crop safety, and farming policies.
 
 
 **FEATURES**
-  -Frontend: HTML,JS
-  -Hosting: Github.
+  - Frontend: HTML,JS
+  - Hosting: Github.
 
 
 
