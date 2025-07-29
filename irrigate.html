@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Smart Irrigation Simulator</title>
+<style>
+  body {
+    background: #111;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+  }
+  h1 {
+    margin-top: 15px;
+    color: #4CAF50;
+  }
+  #farmCanvas {
+    background: #222;
+    margin-top: 10px;
+    border: 2px solid white;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  #controls {
+    margin-top: 15px;
+  }
+  button {
+    padding: 10px 15px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 6px;
+  }
+  button:hover {
+    background: #45a049;
+  }
+  #weather {
+    margin-top: 20px;
+  }
+  #popupTable {
+    display: none;
+    background: #222;
+    padding: 20px;
+    border: 2px solid white;
+    border-radius: 8px;
+    width: 60%;
+    margin: 20px auto;
+    color: white;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  table, td, th {
+    border: 1px solid white;
+  }
+  th, td {
+    padding: 8px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<h1>🌱 Smart Irrigation Simulator</h1>
+<canvas id="farmCanvas" width="500" height="500"></canvas>
+<div id="controls">
+  <button onclick="startIrrigation()">💧 Start Irrigation</button>
+</div>
+<div id="weather">
+  <h2>Weather Forecast</h2>
+  <p id="forecast"></p>
+</div>
+<div id="popupTable"></div>
+
+<script>
+// ======= Canvas & Grid Setup =======
+const canvas = document.getElementById("farmCanvas");
+const ctx = canvas.getContext("2d");
+const gridSize = 10;
+const cellSize = canvas.width / gridSize;
+
+let moisture = [];
+let needsIrrigation = [];
+let forecast = [];
+let isIrrigating = false;
+let rainDrops = [];
+
+// Base64 raindrop image for offline mode
+const imgDrop = new Image();
+imgDrop.src = "data:image/svg+xml;base64," + btoa(`
+<svg xmlns="http://www.w3.org/2000/svg" width="6" height="10">
+<ellipse cx="3" cy="5" rx="2" ry="4" fill="skyblue"/>
+</svg>
+`);
+
+// ======= Initialization =======
+function init() {
+  for (let i = 0; i < gridSize; i++) {
+    moisture[i] = [];
+    needsIrrigation[i] = [];
+    for (let j = 0; j < gridSize; j++) {
+      moisture[i][j] = 20; // start low so it's yellow
+      needsIrrigation[i][j] = true;
+    }
+  }
+  generateWeatherForecast();
+  draw();
+}
+
+// ======= Weather =======
+function generateWeatherForecast() {
+  forecast = [];
+  for (let day = 0; day < 3; day++) {
+    const rainChance = Math.random();
+    let condition;
+    if (rainChance > 0.7) condition = "🌧️ Rain";
+    else if (rainChance > 0.4) condition = "🌤️ Cloudy";
+    else condition = "☀️ Sunny";
+    const temp = Math.floor(Math.random() * 15 + 20);
+    const humidity = Math.floor(Math.random() * 40 + 40);
+    forecast.push({ condition, temp, humidity, rainChance });
+  }
+  displayForecast();
+}
+
+function displayForecast() {
+  let text = "";
+  forecast.forEach((f, idx) => {
+    text += `Day ${idx + 1}: ${f.condition}, 🌡️ ${f.temp}°C, 💧 ${f.humidity}%, Rain chance: ${(f.rainChance*100).toFixed(0)}%<br>`;
+  });
+  document.getElementById("forecast").innerHTML = text;
+}
+
+// ======= Drawing =======
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < gridSize; i++) {
+    for (let j = 0; j < gridSize; j++) {
+      let color;
+      if (moisture[i][j] > 60) color = "blue";
+      else if (moisture[i][j] > 40) color = "green";
+      else color = "yellow";
+      ctx.fillStyle = color;
+      ctx.fillRect(j * cellSize, i * cellSize, cellSize - 1, cellSize - 1);
+    }
+  }
+}
+
+// ======= Irrigation Needs =======
+function checkIrrigationNeeds() {
+  for (let i = 0; i < gridSize; i++) {
+    for (let j = 0; j < gridSize; j++) {
+      needsIrrigation[i][j] = (moisture[i][j] < 40 && forecast[0].rainChance < 0.5);
+    }
+  }
+}
+
+// ======= Falling Rain Animation =======
+function startIrrigation() {
+  if (isIrrigating) return;
+  isIrrigating = true;
+
+  // Create raindrops starting above the canvas
+  rainDrops = [];
+  for (let i = 0; i < 100; i++) {
+    rainDrops.push({
+      x: Math.random() * canvas.width,
+      y: -Math.random() * canvas.height,
+      speed: 3 + Math.random() * 2,
+      alpha: 1
+    });
+  }
+
+  let frameCount = 0;
+  function rainAnimation() {
+    draw();
+
+    // Draw and move raindrops
+    rainDrops.forEach(drop => {
+      ctx.globalAlpha = drop.alpha;
+      ctx.drawImage(imgDrop, drop.x, drop.y, 6, 10);
+      drop.y += drop.speed; // falling
+      if (drop.y > canvas.height) {
+        drop.y = canvas.height;
+        drop.alpha -= 0.05; // fade out after hitting ground
+      }
+    });
+    ctx.globalAlpha = 1;
+
+    frameCount++;
+    if (frameCount < 80) {
+      requestAnimationFrame(rainAnimation);
+    } else {
+      // Apply moisture after rain finishes
+      for (let i = 0; i < gridSize; i++) {
+        for (let j = 0; j < gridSize; j++) {
+          moisture[i][j] += 40;
+          if (moisture[i][j] > 100) moisture[i][j] = 100;
+        }
+      }
+      checkIrrigationNeeds();
+      draw();
+      isIrrigating = false;
+      showNextIrrigationTable();
+    }
+  }
+  rainAnimation();
+}
+
+// ======= Popup Table =======
+function showNextIrrigationTable() {
+  const popup = document.getElementById("popupTable");
+  let nextIrrigationDays = "2-3 days (based on forecast)";
+  if (forecast[0].rainChance > 0.7) {
+    nextIrrigationDays = "Likely after 4-5 days (rain expected)";
+  }
+  let html = `<h3>📅 Irrigation Report</h3>
+              <p>Next irrigation likely needed in: <b>${nextIrrigationDays}</b></p>
+              <table>
+                <tr><th>Day</th><th>Condition</th><th>Temp (°C)</th><th>Humidity (%)</th><th>Rain Chance</th></tr>`;
+  forecast.forEach((f, idx) => {
+    html += `<tr>
+              <td>${idx + 1}</td>
+              <td>${f.condition}</td>
+              <td>${f.temp}</td>
+              <td>${f.humidity}</td>
+              <td>${(f.rainChance * 100).toFixed(0)}%</td>
+            </tr>`;
+  });
+  html += "</table>";
+  popup.innerHTML = html;
+  popup.style.display = "block";
+}
+
+// ======= Start =======
+init();
+</script>
+</body>
+</html>
