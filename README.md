@@ -22,7 +22,7 @@ Farmers Guide to Safe Farming is a community-centered tech solution designed to 
   - Health effects tab offers in-depth information
    
 
-- Smart Automated Watering System:
+- SMART AUTOMATED WATERING SYSTEM:
   
   - Grid based farming simulation
   
@@ -31,7 +31,8 @@ Farmers Guide to Safe Farming is a community-centered tech solution designed to 
   - Real-time 2D animation with matplotlib
 
 
-- Easy Access to Government Schemes:
+- EASY ACCESS TO GOVERNMENT SCHEMES:
+  
   - Gives a list of Government schemes that the user is Eligible for
  
   - Gives a personalized preference of recommendations based on location
