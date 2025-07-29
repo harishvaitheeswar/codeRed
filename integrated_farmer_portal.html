@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Portal - Complete System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Auth Page Styles */
+        .auth-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 450px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #f0f0f0;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            transform: scale(1.2);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success-message {
+            color: #27ae60;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .profile-form {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .form-step {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .form-step h3 {
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .welcome-text {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .account-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .account-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 50px 20px;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .welcome-section h2 {
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .welcome-section p {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .service-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .service-card:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+
+        .service-card:hover::before {
+            height: 8px;
+        }
+
+        .service-icon {
+            font-size: 3.5rem;
+            margin-bottom: 25px;
+            display: block;
+        }
+
+        .service-card h3 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .service-card p {
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .service-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .service-btn:hover::before {
+            left: 100%;
+        }
+
+        .service-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.3);
+        }
+
+        .stats-section {
+            margin-top: 80px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+
+        .stat-item {
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .footer {
+            margin-top: 80px;
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .footer p {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .footer .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Account Info Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 25px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .close:hover {
+            opacity: 0.7;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .account-info-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .info-value {
+            color: #34495e;
+            text-align: right;
+        }
+
+        .health-data-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e8f5e8;
+            border-radius: 15px;
+            border: 2px solid #4CAF50;
+        }
+
+        .health-data-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .user-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .welcome-section h2 {
+                font-size: 2rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .service-card {
+                padding: 30px 25px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .footer .contact-info {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+
+            .container {
+                margin: 10px;
+            }
+            
+            .form-container {
+                padding: 25px;
+            }
+            
+            .header {
+                padding: 25px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 30px 15px;
+            }
+
+            .welcome-section {
+                margin-bottom: 40px;
+            }
+
+            .stats-section {
+                margin-top: 50px;
+                padding: 30px 20px;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication Section -->
+    <div id="auth-page" class="auth-container">
+        <div class="container">
+            <div class="header">
+                <h1>🌾 Farmer Portal</h1>
+                <p>Welcome to your agricultural community</p>
+            </div>
+
+            <!-- Authentication Form -->
+            <div id="auth-form" class="form-container">
+                <div class="tab-buttons">
+                    <button class="tab-button active" onclick="switchTab('signin')">Sign In</button>
+                    <button class="tab-button" onclick="switchTab('signup')">Sign Up</button>
+                </div>
+
+                <!-- Sign In Form -->
+                <div id="signin-form">
+                    <div class="form-group">
+                        <label for="signin-contact">Email or Phone Number</label>
+                        <input type="text" id="signin-contact" placeholder="Enter your email or phone number" required>
+                        <div class="error-message" id="signin-error"></div>
+                    </div>
+                    <button type="button" class="submit-btn" onclick="handleSignIn()">Sign In</button>
+                </div>
+
+                <!-- Sign Up Form -->
+                <div id="signup-form" class="hidden">
+                    <div class="form-group">
+                        <label for="signup-contact">Email or Phone Number</label>
+                        <input type="text" id="signup-contact" placeholder="Enter your email or phone number" required>
+                        <div class="error-message" id="signup-error"></div>
+                    </div>
+                    <button type="button" class="submit-btn" onclick="handleSignUp()">Create Account</button>
+                </div>
+            </div>
+
+            <!-- Profile Completion Form -->
+            <div id="profile-form" class="form-container hidden">
+                <div class="form-step">
+                    <h3>Complete Your Profile</h3>
+                    <p>Please provide the following information to access the main portal:</p>
+                </div>
+
+                <form id="user-profile-form">
+                    <div class="form-group">
+                        <label for="user-name">Full Name</label>
+                        <input type="text" id="user-name" placeholder="Enter your full name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user-age">Age</label>
+                        <input type="number" id="user-age" placeholder="Enter your age" min="18" max="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user-gender">Gender</label>
+                        <select id="user-gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                            <option value="prefer-not-to-say">Prefer not to say</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user-language">Preferred Language</label>
+                        <select id="user-language" required>
+                            <option value="">Select Language</option>
+                            <option value="hindi">Hindi</option>
+                            <option value="english">English</option>
+                            <option value="tamil">Tamil</option>
+                            <option value="telugu">Telugu</option>
+                            <option value="bengali">Bengali</option>
+                            <option value="marathi">Marathi</option>
+                            <option value="gujarati">Gujarati</option>
+                            <option value="kannada">Kannada</option>
+                            <option value="malayalam">Malayalam</option>
+                            <option value="punjabi">Punjabi</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user-village">Village/Region</label>
+                        <input type="text" id="user-village" placeholder="Enter your village or region" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>BPL Card Status</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="bpl-holder">
+                            <label for="bpl-holder">I am a BPL (Below Poverty Line) card holder</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Complete Profile & Continue</button>
+                </form>
+            </div>
+
+            <!-- Success Message -->
+            <div id="success-message" class="hidden">
+                <div class="success-message">
+                    <h3>✅ Profile Completed Successfully!</h3>
+                    <p>Redirecting to main portal...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboard-page" class="dashboard">
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="logo">
+                    <span style="font-size: 2.5rem;">🌾</span>
+                    <h1>Farmer Portal</h1>
+                </div>
+                <div class="user-info">
+                    <span class="welcome-text" id="dashboard-welcome">Welcome back, Farmer!</span>
+                    <button class="account-btn" onclick="viewAccountInfo()">
+                        👤 Account Info
+                    </button>
+                    <button class="logout-btn" onclick="logout()">
+                        🚪 Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="welcome-section">
+                <h2>Your Agricultural Dashboard</h2>
+                <p>Access all your farming tools and resources in one place. Manage your farm, monitor your health, and stay connected with the agricultural community.</p>
+            </section>
+
+            <section class="services-grid">
+                <div class="service-card">
+                    <span class="service-icon">🚜</span>
+                    <h3>Farm Management</h3>
+                    <p>Access comprehensive farm information software to track crops, manage resources, monitor weather conditions, and optimize your agricultural operations.</p>
+                    <button class="service-btn" onclick="redirectToFarmSoftware()">
+                        Access Farm Software
+                    </button>
+                </div>
+
+                <div class="service-card">
+                    <span class="service-icon">🏥</span>
+                    <h3>Health Portal</h3>
+                    <p>Take care of your health with our dedicated farmer health portal. Schedule appointments, access health resources, and connect with healthcare professionals.</p>
+                    <button class="service-btn" onclick="redirectToHealthPortal()">
+                        Visit Health Portal
+                    </button>
+                </div>
+
+                <div class="service-card">
+                    <span class="service-icon">👤</span>
+                    <h3>Account Management</h3>
+                    <p>View and update your personal information, manage your profile settings, and access your account history and preferences.</p>
+                    <button class="service-btn" onclick="viewAccountInfo()">
+                        Manage Account
+                    </button>
+                </div>
+            </section>
+
+            <section class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">10K+</div>
+                        <div class="stat-label">Active Farmers</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">Villages Covered</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Support Available</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">99%</div>
+                        <div class="stat-label">User Satisfaction</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>© 2025 Farmer Portal. Empowering farmers with technology.</p>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <span>📞</span>
+                    <span>1800-FARMER</span>
+                </div>
+                <div class="contact-item">
+                    <span>✉️</span>
+                    <span>support@farmerportal.com</span>
+                </div>
+                <div class="contact-item">
+                    <span>🌐</span>
+                    <span>www.farmerportal.com</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Account Info Modal -->
+    <div id="accountModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>👤 Account Information</h2>
+                <span class="close" onclick="closeAccountModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="account-info-grid" id="account-info-content">
+                    <!-- Account info will be populated here -->
+                </div>
+                
+                <div class="health-data-section">
+                    <h3>🏥 Health Data (from health_data.csv)</h3>
+                    <div id="health-data-content">
+                        <p style="color: #666; font-style: italic;">Health data will be loaded from health_data.csv when available...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // In-memory storage for user data
+        let users = {};
+        let currentUser = null;
+        let healthData = [];
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in (in a real app, check session/token)
+            const savedUser = sessionStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showDashboard();
+            }
+            
+            // Simulate health data (in real app, this would be loaded from health_data.csv)
+            initializeHealthData();
+        });
+
+        // Switch between sign in and sign up tabs
+        function switchTab(tab) {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const signinForm = document.getElementById('signin-form');
+            const signupForm = document.getElementById('signup-form');
+
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            
+            if (tab === 'signin') {
+                tabButtons[0].classList.add('active');
+                signinForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+            } else {
+                tabButtons[1].classList.add('active');
+                signinForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+            }
+        }
+
+        // Validate email or phone number
+        function validateContact(contact) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const phoneRegex = /^[+]?[\d\s\-\(\)]{10,}$/;
+            return emailRegex.test(contact) || phoneRegex.test(contact);
+        }
+
+        // Handle sign in - redirect to dashboard
+        function handleSignIn() {
+            const contact = document.getElementById('signin-contact').value.trim();
+            
+            if (!validateContact(contact)) {
+                showError('signin-error', 'Please enter a valid email or phone number');
+                return;
+            }
+            
+            // Store the contact info and simulate successful login
+            currentUser = {
+                contact: contact,
+                profileComplete: true,
+                name: 'John Farmer', // Simulated existing user data
+                age: 35,
+                gender: 'male',
+                language: 'english',
+                village: 'Green Valley',
+                bplHolder: false,
+                loginTime: new Date().toISOString()
+            };
+            
+            // Save to session storage
+            sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            console.log('Sign in successful, redirecting to dashboard');
+            showDashboard();
+        }
+
+        // Handle sign up - redirect to profile form
+        function handleSignUp() {
+            const contact = document.getElementById('signup-contact').value.trim();
+            
+            if (!validateContact(contact)) {
+                showError('signup-error', 'Please enter a valid email or phone number');
+                return;
+            }
+            
+            // For new users, redirect to profile completion
+            currentUser = {
+                contact: contact,
+                profileComplete: false
+            };
+
+            console.log('Sign up clicked, redirecting to profile form');
+            showProfileForm();
+        }
+
+        // Show error message
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        // Show profile completion form
+        function showProfileForm() {
+            document.getElementById('auth-form').classList.add('hidden');
+            document.getElementById('profile-form').classList.remove('hidden');
+        }
+
+        // Handle profile completion
+        document.getElementById('user-profile-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('user-name').value.trim(),
+                age: document.getElementById('user-age').value,
+                gender: document.getElementById('user-gender').value,
+                language: document.getElementById('user-language').value,
+                village: document.getElementById('user-village').value.trim(),
+                bplHolder: document.getElementById('bpl-holder').checked
+            };
+
+            // Validate all fields are filled
+            if (!formData.name || !formData.age || !formData.gender || !formData.language || !formData.village) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Update user data
+            currentUser = {
+                ...currentUser,
+                ...formData,
+                profileComplete: true,
+                loginTime: new Date().toISOString()
+            };
+            users[currentUser.contact] = currentUser;
+            sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+            console.log('User Profile Completed:', currentUser);
+            showSuccessAndRedirect();
+        });
+
+        // Show success message and redirect to dashboard
+        function showSuccessAndRedirect() {
+            document.getElementById('profile-form').classList.add('hidden');
+            document.getElementById('success-message').classList.remove('hidden');
+
+            // Redirect to dashboard after 2 seconds
+            setTimeout(() => {
+                showDashboard();
+            }, 2000);
+        }
+
+        // Show dashboard and hide auth page
+        function showDashboard() {
+            document.getElementById('auth-page').style.display = 'none';
+            document.getElementById('dashboard-page').classList.add('active');
+            
+            // Update welcome message with user name
+            if (currentUser && currentUser.name) {
+                document.getElementById('dashboard-welcome').textContent = `Welcome back, ${currentUser.name}!`;
+            }
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                currentUser = null;
+                sessionStorage.removeItem('currentUser');
+                
+                // Reset forms
+                document.getElementById('signin-contact').value = '';
+                document.getElementById('signup-contact').value = '';
+                document.getElementById('user-profile-form').reset();
+                
+                // Hide dashboard and show auth page
+                document.getElementById('dashboard-page').classList.remove('active');
+                document.getElementById('auth-page').style.display = 'flex';
+                
+                // Reset to sign in tab
+                switchTab('signin');
+                
+                // Hide any visible sections
+                document.getElementById('auth-form').classList.remove('hidden');
+                document.getElementById('profile-form').classList.add('hidden');
+                document.getElementById('success-message').classList.add('hidden');
+            }
+        }
+
+        // Initialize sample health data (simulating health_data.csv)
+        function initializeHealthData() {
+            // This simulates data that would be loaded from health_data.csv
+            // In a real application, you would use Papa Parse or similar to load the CSV
+            healthData = [
+                {
+                    id: 1,
+                    farmer_id: currentUser?.contact || 'demo@farmer.com',
+                    checkup_date: '2024-12-15',
+                    blood_pressure: '120/80',
+                    weight: '72',
+                    height: '175',
+                    bmi: '23.5',
+                    health_status: 'Good',
+                    doctor_notes: 'Regular exercise recommended',
+                    next_checkup: '2025-06-15'
+                },
+                {
+                    id: 2,
+                    farmer_id: currentUser?.contact || 'demo@farmer.com',
+                    checkup_date: '2024-06-10',
+                    blood_pressure: '118/75',
+                    weight: '70',
+                    height: '175',
+                    bmi: '22.9',
+                    health_status: 'Excellent',
+                    doctor_notes: 'All parameters normal',
+                    next_checkup: '2024-12-10'
+                }
+            ];
+        }
+
+        // Load health data from CSV (placeholder for actual CSV loading)
+        async function loadHealthDataFromCSV() {
+            try {
+                // In a real application, you would read the health_data.csv file here
+                // For example, using Papa Parse:
+                // const response = await fetch('health_data.csv');
+                // const csvText = await response.text();
+                // const parsed = Papa.parse(csvText, { header: true });
+                // return parsed.data.filter(row => row.farmer_id === currentUser.contact);
+                
+                // For now, return simulated data
+                return healthData.filter(record => record.farmer_id === currentUser?.contact);
+            } catch (error) {
+                console.error('Error loading health data:', error);
+                return [];
+            }
+        }
+
+        // View account information
+        async function viewAccountInfo() {
+            console.log('Opening account information modal...');
+            
+            const modal = document.getElementById('accountModal');
+            const accountContent = document.getElementById('account-info-content');
+            const healthContent = document.getElementById('health-data-content');
+            
+            // Populate account information
+            if (currentUser) {
+                accountContent.innerHTML = `
+                    <div class="info-item">
+                        <span class="info-label">📧 Contact</span>
+                        <span class="info-value">${currentUser.contact}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">👤 Full Name</span>
+                        <span class="info-value">${currentUser.name || 'Not provided'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">🎂 Age</span>
+                        <span class="info-value">${currentUser.age || 'Not provided'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">⚧ Gender</span>
+                        <span class="info-value">${currentUser.gender ? currentUser.gender.charAt(0).toUpperCase() + currentUser.gender.slice(1) : 'Not provided'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">🗣️ Language</span>
+                        <span class="info-value">${currentUser.language ? currentUser.language.charAt(0).toUpperCase() + currentUser.language.slice(1) : 'Not provided'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">🏘️ Village/Region</span>
+                        <span class="info-value">${currentUser.village || 'Not provided'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">💳 BPL Status</span>
+                        <span class="info-value">${currentUser.bplHolder ? 'Yes' : 'No'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">⏰ Last Login</span>
+                        <span class="info-value">${currentUser.loginTime ? new Date(currentUser.loginTime).toLocaleString() : 'Not available'}</span>
+                    </div>
+                `;
+            } else {
+                accountContent.innerHTML = '<p>No account information available.</p>';
+            }
+            
+            // Load and display health data
+            healthContent.innerHTML = '<p style="color: #666; font-style: italic;">Loading health data...</p>';
+            
+            try {
+                const userHealthData = await loadHealthDataFromCSV();
+                
+                if (userHealthData.length > 0) {
+                    let healthHTML = '';
+                    userHealthData.forEach((record, index) => {
+                        healthHTML += `
+                            <div class="info-item" style="flex-direction: column; align-items: stretch; margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <span class="info-label">📅 Checkup ${index + 1}</span>
+                                    <span class="info-value">${new Date(record.checkup_date).toLocaleDateString()}</span>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9rem;">
+                                    <div><strong>Blood Pressure:</strong> ${record.blood_pressure}</div>
+                                    <div><strong>Weight:</strong> ${record.weight} kg</div>
+                                    <div><strong>Height:</strong> ${record.height} cm</div>
+                                    <div><strong>BMI:</strong> ${record.bmi}</div>
+                                    <div style="grid-column: 1/-1;"><strong>Status:</strong> 
+                                        <span style="color: ${record.health_status === 'Excellent' ? '#27ae60' : record.health_status === 'Good' ? '#f39c12' : '#e74c3c'};">
+                                            ${record.health_status}
+                                        </span>
+                                    </div>
+                                    ${record.doctor_notes ? `<div style="grid-column: 1/-1;"><strong>Notes:</strong> ${record.doctor_notes}</div>` : ''}
+                                    ${record.next_checkup ? `<div style="grid-column: 1/-1;"><strong>Next Checkup:</strong> ${new Date(record.next_checkup).toLocaleDateString()}</div>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    healthContent.innerHTML = healthHTML;
+                } else {
+                    healthContent.innerHTML = '<p style="color: #666; font-style: italic;">No health records found for this user.</p>';
+                }
+            } catch (error) {
+                healthContent.innerHTML = '<p style="color: #e74c3c;">Error loading health data. Please try again later.</p>';
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        // Close account modal
+        function closeAccountModal() {
+            document.getElementById('accountModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('accountModal');
+            if (event.target === modal) {
+                closeAccountModal();
+            }
+        }
+
+        // Redirect functions for other services
+        function redirectToFarmSoftware() {
+            console.log('Redirecting to farm information software...');
+            
+            const btn = event.target;
+            btn.classList.add('loading');
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                const farmSoftwareURL = 'https://your-farm-software.com';
+                alert(`Redirecting to Farm Management Software:\n${farmSoftwareURL}\n\nThis will open the comprehensive farm information system.`);
+                
+                // Uncomment when you have the actual URL:
+                // window.location.href = farmSoftwareURL;
+                
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }, 1000);
+        }
+
+        function redirectToHealthPortal() {
+            console.log('Redirecting to farmer health portal...');
+            
+            const btn = event.target;
+            btn.classList.add('loading');
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                const healthPortalURL = 'https://your-health-portal.com';
+                alert(`Redirecting to Farmer Health Portal:\n${healthPortalURL}\n\nThis will open the dedicated health management system.`);
+                
+                // Uncomment when you have the actual URL:
+                // window.location.href = healthPortalURL;
+                
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }, 1000);
+        }
+
+        // Clear error messages on input
+        document.addEventListener('input', function(e) {
+            if (e.target.type === 'text' || e.target.type === 'email') {
+                const errorDiv = e.target.parentNode.querySelector('.error-message');
+                if (errorDiv) {
+                    errorDiv.style.display = 'none';
+                }
+            }
+        });
+
+        // Add smooth scrolling for better UX
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Add entrance animations on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements for animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const elementsToObserve = document.querySelectorAll('.service-card, .stats-section');
+            elementsToObserve.forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
