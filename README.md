@@ -17,7 +17,7 @@ A one stop for all the queries and problems related to farming and related thing
 
   -Takes the loaction of the user and then sees the risks
  
-  - Automatically searches and gives the nearest PHCS
+  -Automatically searches and gives the nearest PHCS
    
 
 - AN AUTOMATED WATERING VEHICLE THAT WATERS ACCORDING TO MOISTURE LEVEL:
