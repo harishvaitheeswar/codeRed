@@ -36,7 +36,6 @@ Farmers Guide to Safe Farming is a community-centered tech solution designed to 
 
 
 - Easy Access to Government Schemes:
-  
   - Gives a list of Government schemes that the user is Eligible for
  
   - Gives a personalised Preference of recommendations based on location
