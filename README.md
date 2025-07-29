@@ -4,7 +4,7 @@ Farmers Guide to Safe Farming is a community-centered tech solution designed to 
 
 **PROJECT OVERVIEW**
 
-- There are multiple features to this project which are ass follows:
+- There are multiple features to this project which are as follows:
   - Smart Automated Watering System 
   - Health Risk assessment system based on Fertilizers used 
   - Allows Farmers to access various government schemes 
