@@ -26,11 +26,7 @@ Farmers Guide to Safe Farming is a community-centered tech solution designed to 
   
   - Grid based farming simulation
   
-  - Refill Vehicles decided when to water and when to refill the water without user input (Automated)
-  
-  - Vehicle has automated pathfinding system
-  
-  - Pulsing color-coded feedback based on vehicle water level (low water = white pulsing, full = purple)
+  - Drip irrigation system decideds when to water without user input (Automated)
   
   - Real-time 2D animation with matplotlib
 
@@ -45,7 +41,6 @@ Farmers Guide to Safe Farming is a community-centered tech solution designed to 
 **UI**
 
 - Moisture Detection: Automatically senses soil moisture and gives the data to the user
-- Tank Water Level: Clearly displays remaining water.
 - Easy-to-use crop status tracker
 - Helpful tabs for health insights and government schemes
 - Read-aloud accessibility for non-readers
