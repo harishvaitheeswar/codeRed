@@ -2,17 +2,30 @@
 
 A one stop for all the queries and problems related to farming and related things.
 
-**FEATURES**
+**PROJECT OVERVIEW**
 
 -There are multiple features to this project which are ass follows:
+ -Smart Automated Watering System 
+ -Health Risk Deduction system based on Fertilizers used 
+ -Allows Farmers to access variious government schemes 
 
-**BACKEND**
+ 
+**BACKEND FEATURES**
 
--Ingests crop spraying data (frequency, chemical type, seasonality, area covered).
 
--Overlays it with geo-tagged health issues = from nearby *PHCs (Primary Health Centers)*.
+-CHECKS THE LOCATION AND TIME PERIOD OF THE USER TO TAG TO VARIOUS RISKS AND THEIR PREVENTION:
+ -Takes the loaction of the user and then sees the risks
+ - Automatically searches and gives the nearest PHCS
 
--Uses spatial + temporal correlation = to highlight at-risk villages or time periods.
+- AN AUTOMATED WATERING VEHICLE THAT WATERS ACCORDING TO MOISTURE LEVEL:
+  -Grid based farming simulation
+  -Refill Vehicles decided when to water and when to refill the water without user input(Automated)
+  -Vehicle has automated pathfinding system
+  -Pulsing color-coded feedback based on vehicle water level (low water = white pulsing, full = purple)
+  -Real-time 2D animation with matplotlib
+  -Animated vehicle and tank with glow and pulsing effects for emphasis
+
+
 
 
 
