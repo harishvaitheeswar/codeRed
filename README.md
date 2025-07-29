@@ -33,7 +33,7 @@ A one stop for all the queries and problems related to farming and related thing
 
 - Automated system that detects the moisture level in the soil
 - Waters the plant that has low Moisture level without human interference
-- Easy Inerface to check up on crop health and Status
+- Easy Inerface to check up on crop water level status
 - Easy access to Help Schemes and other Government schemes that are helpfull for farmers.
 - Helpfull interface that allows farmers to select the fertilizer according to the location inputed by the farmer
 - Shows the high risk Fertilizer compared to the Low risk ones and inform them of their side effects to their health
