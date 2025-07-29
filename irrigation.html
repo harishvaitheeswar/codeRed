@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Smart Irrigation Simulator</title>
+<style>
+  body {
+    background: #111;
+    color: white;
+
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  #farmCanvas {
+    background: #222;
+    margin-top: 10px;
+    border: 2px solid white;
+  }
+  #controls {
+    margin-top: 10px;
+  }
+  button {
+    padding: 10px 15px;
+    background: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  #weather {
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+<h1>🌱 Smart Irrigation Simulator</h1>
+<canvas id="farmCanvas" width="500" height="500"></canvas>
+<div id="controls">
+  <button onclick="startIrrigation()">💧 Start Irrigation</button>
+</div>
+<div id="weather">
+  <h2>Weather Forecast</h2>
+  <p id="forecast"></p>
+</div>
+<script>
+const canvas = document.getElementById("farmCanvas");
+const ctx = canvas.getContext("2d");
+const gridSize = 10;
+const cellSize = canvas.width / gridSize;
+let moisture = [];
+let needsIrrigation = [];
+let forecast = [];
+function init() {
+  // Initialize moisture values
+  for (let i = 0; i < gridSize; i++) {
+    moisture[i] = [];
+    needsIrrigation[i] = [];
+    for (let j = 0; j < gridSize; j++) {
+      moisture[i][j] = Math.random() * 100; // 0–100%
+      needsIrrigation[i][j] = false;
+    }
+  }
+  generateWeatherForecast();
+  draw();
+}
+function generateWeatherForecast() {
+  const conditions = ["☀️ Sunny", "🌤️ Cloudy", "🌧️ Rain"];
+  forecast = [];
+  for (let day = 0; day < 3; day++) {
+    const rainChance = Math.random();
+    let condition;
+    if (rainChance > 0.7) condition = "🌧️ Rain";
+    else if (rainChance > 0.4) condition = "🌤️ Cloudy";
+    else condition = "☀️ Sunny";
+    const temp = Math.floor(Math.random() * 15 + 20); // 20–35°C
+    const humidity = Math.floor(Math.random() * 40 + 40); // 40–80%
+    
+    forecast.push({ condition, temp, humidity, rainChance });
+  }
+  
+  displayForecast();
+}
+function displayForecast() {
+  let text = "";
+  forecast.forEach((f, idx) => {
+    text += `Day ${idx + 1}: ${f.condition}, 🌡️ ${f.temp}°C, 💧 ${f.humidity}%, Rain chance: ${(f.rainChance*100).toFixed(0)}%<br>`;
+  });
+  document.getElementById("forecast").innerHTML = text;
+}
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < gridSize; i++) {
+    for (let j = 0; j < gridSize; j++) {
+      let color;
+      if (needsIrrigation[i][j]) {
+        color = "yellow"; // needs water
+      } else if (moisture[i][j] > 60) {
+        color = "blue"; // well-watered
+      } else {
+        color = "green"; // okay moisture
+      }
+      ctx.fillStyle = color;
+      ctx.fillRect(j * cellSize, i * cellSize, cellSize - 1, cellSize - 1);
+    }
+  }
+}
+function updateMoisture() {
+  for (let i = 0; i < gridSize; i++) {
+    for (let j = 0; j < gridSize; j++) {
+      // Evaporation loss
+      moisture[i][j] -= 0.5;
+      if (moisture[i][j] < 0) moisture[i][j] = 0;
+    }
+  }
+  
+  // Simulated rain effect
+  if (forecast[0].rainChance > 0.7) {
+    for (let i = 0; i < gridSize; i++) {
+      for (let j = 0; j < gridSize; j++) {
+        moisture[i][j] += 5;
+        if (moisture[i][j] > 100) moisture[i][j] = 100;
+      }
+    }
+  }
+}
+function checkIrrigationNeeds() {
+  for (let i = 0; i < gridSize; i++) {
+    for (let j = 0; j < gridSize; j++) {
+      needsIrrigation[i][j] = (moisture[i][j] < 40 && forecast[0].rainChance < 0.5);
+    }
+  }
+}
+function startIrrigation() {
+  // Create list of cells that need irrigation
+  let cellsToIrrigate = [];
+  for (let i = 0; i < gridSize; i++) {
+    for (let j = 0; j < gridSize; j++) {
+      if (needsIrrigation[i][j]) {
+        cellsToIrrigate.push({i, j});
+      }
+    }
+  }
+  
+  // Animate the irrigation process
+  let currentCell = 0;
+  const animationSpeed = 100; // milliseconds between each cell
+  
+  function animateNextCell() {
+    if (currentCell < cellsToIrrigate.length) {
+      const cell = cellsToIrrigate[currentCell];
+      const i = cell.i;
+      const j = cell.j;
+      
+      // Add water to this cell
+      moisture[i][j] += 30;
+      if (moisture[i][j] > 100) moisture[i][j] = 100;
+      
+      // Update irrigation needs and redraw
+      checkIrrigationNeeds();
+      draw();
+      
+      // Highlight the cell being irrigated with a white border
+      ctx.strokeStyle = "white";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(j * cellSize, i * cellSize, cellSize - 1, cellSize - 1);
+      
+      currentCell++;
+      setTimeout(animateNextCell, animationSpeed);
+    }
+  }
+  
+  // Start the animation
+  if (cellsToIrrigate.length > 0) {
+    animateNextCell();
+  }
+}
+function loop() {
+  updateMoisture();
+  checkIrrigationNeeds();
+  draw();
+  requestAnimationFrame(loop);
+}
+init();
+loop();
+</script>
+</body>
+</html>
