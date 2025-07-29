@@ -3,9 +3,11 @@
 A one stop for all the queries and problems related to farming and related things.
 
 **FEATURES**
-There are multiple features to this project which are ass follows:
 
-#BACKEND
+-There are multiple features to this project which are ass follows:
+
+**BACKEND**
+
 -Ingests crop spraying data (frequency, chemical type, seasonality, area covered).
 
 -Overlays it with geo-tagged health issues = from nearby *PHCs (Primary Health Centers)*.
@@ -14,7 +16,8 @@ There are multiple features to this project which are ass follows:
 
 
 
-#UI
+**UI**
+
 - Automated system that detects the moisture level in the soil
 - Waters the plant that has low Moisture level without human interference
 - Easy Inerface to check up on crop health and Status
