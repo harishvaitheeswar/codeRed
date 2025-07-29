@@ -6,14 +6,14 @@ Farmers Guide to Safe Farming is a community-centered tech solution designed to 
 
 - There are multiple features to this project which are as follows:
   - Smart Automated Watering System 
-  - Health Risk Deduction system based on Fertilizers used 
+  - Health Risk assessment system based on Fertilizers used 
   - Allows Farmers to access various government schemes 
 
  
 **BACKEND FEATURES**
 
 
-- A FERTILIZER HEALTH ALALYSIS SYSTEM:
+- A FERTILIZER HEALTH ANALYSIS SYSTEM:
 
   - Takes the location of the user and then sees the risks of the most used fertilizer in that area
  
@@ -26,7 +26,7 @@ Farmers Guide to Safe Farming is a community-centered tech solution designed to 
   
   - Grid based farming simulation
   
-  - Refill Vehicles decided when to water and when to refill the water without user input(Automated)
+  - Refill Vehicles decided when to water and when to refill the water without user input (Automated)
   
   - Vehicle has automated pathfinding system
   
@@ -38,7 +38,7 @@ Farmers Guide to Safe Farming is a community-centered tech solution designed to 
 - Easy Access to Government Schemes:
   - Gives a list of Government schemes that the user is Eligible for
  
-  - Gives a personalised Preference of recommendations based on location
+  - Gives a personalized preference of recommendations based on location
 
 
 
@@ -50,6 +50,7 @@ Farmers Guide to Safe Farming is a community-centered tech solution designed to 
 - Helpful tabs for health insights and government schemes
 - Read-aloud accessibility for non-readers
 - With the farmer's consent, anonymized data can be used by:
+  
     -Research organizations
 
     -NGOs
