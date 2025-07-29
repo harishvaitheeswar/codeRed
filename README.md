@@ -7,7 +7,7 @@ Farmers Guide to Safe Farming is a community-centered tech solution designed to 
 - There are multiple features to this project which are as follows:
   - Smart Automated Watering System 
   - Health Risk Deduction system based on Fertilizers used 
-  - Allows Farmers to access variious government schemes 
+  - Allows Farmers to access various government schemes 
 
  
 **BACKEND FEATURES**
@@ -15,7 +15,7 @@ Farmers Guide to Safe Farming is a community-centered tech solution designed to 
 
 - A FERTILIZER HEALTH ALALYSIS SYSTEM:
 
-  - Takes the loaction of the user and then sees the risks of the most used fertilizer in that area
+  - Takes the location of the user and then sees the risks of the most used fertilizer in that area
  
   - Automatically searches and gives the nearest PHCs for treatment and advice
 
